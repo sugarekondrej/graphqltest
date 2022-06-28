@@ -39,3 +39,16 @@ class Query(graphene.ObjectType):
             return models.Movies.objects.get(title=title)
         
         return None
+class MovieCreateMutation(graphene.Mutation):
+    class Arguments:
+        title = graphene.String(required=True)
+        year = graphene.Int(required=True)
+
+    movie = graphene.Field(MovieType)
+
+    def mutate(self, info, title, year):
+        movie = models.Movies.objects.create(title=title, year=year)
+
+        return MovieCreateMutation(movie=movie)
+class Mutation:
+    create_movie = MovieCreateMutation.Field()
