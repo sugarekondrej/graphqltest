@@ -4,6 +4,9 @@ import graphene
 
 from graphene_django.types import DjangoObjectType
 from  api import models
+import graphql_jwt
+from graphql_jwt.decorators import login_required
+
 class MovieType(DjangoObjectType):
     class Meta:
         model = models.Movies
@@ -23,8 +26,10 @@ class Query(graphene.ObjectType):
     all_directors = graphene.List(DirectorType)
 
     def resolve_all_movies(self,info,**kwargs):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception("Not correct auth credentials")
         return models.Movies.objects.all()
-
     def resolve_all_directors(self,info,**kwargs):
         return models.Director.objects.all()
     
@@ -46,7 +51,6 @@ class MovieCreateMutation(graphene.Mutation):
         year = graphene.Int(required=True)
 
     movie = graphene.Field(MovieType)
-
     def mutate(self, info, title, year):
         movie = models.Movies.objects.create(title=title, year=year)
 
@@ -57,7 +61,7 @@ class MovieUpdateMutation(graphene.Mutation):
         year = graphene.Int()
         id = graphene.ID(required=True)
     movie = graphene.Field(MovieType)
-
+    
     def mutate(self,info,id,title,year):
         movie = models.Movies.objects.get(pk=id)
         if title is not None:
@@ -74,6 +78,8 @@ class MovieDeleteMutation(graphene.Mutation):
         movie=models.Movies.objects.get(pk=id)
         movie.delete()
 class Mutation:
+    token_aut=graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
     create_movie = MovieCreateMutation.Field()
     update_movie = MovieUpdateMutation.Field()
     remove_movie= MovieDeleteMutation.Field()
