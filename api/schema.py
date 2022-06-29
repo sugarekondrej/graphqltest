@@ -1,4 +1,5 @@
 from turtle import title
+from typing_extensions import Required
 import graphene 
 
 from graphene_django.types import DjangoObjectType
@@ -65,6 +66,14 @@ class MovieUpdateMutation(graphene.Mutation):
             movie.year = year
         movie.save()
         return MovieUpdateMutation(movie=movie)
+class MovieDeleteMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+    movie = graphene.Field(MovieType)
+    def mutate(self,info,id):
+        movie=models.Movies.objects.get(pk=id)
+        movie.delete()
 class Mutation:
     create_movie = MovieCreateMutation.Field()
     update_movie = MovieUpdateMutation.Field()
+    remove_movie= MovieDeleteMutation.Field()
