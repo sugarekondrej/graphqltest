@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from graphene_django.views import GraphQLView
+from api.views import CustomGraphQLView
+import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("graphql/", GraphQLView.as_view(graphiql=True))
+    path("graphql/", CustomGraphQLView.as_view(graphiql=True)),
+    path('__debug__/', include(debug_toolbar.urls)),
     # path("api",include('api/urls.py'))
 ]

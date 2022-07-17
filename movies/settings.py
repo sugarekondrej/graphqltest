@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-+xz^=qxq@!g&@^!8+%&k95bxpjvz_%_gs$lcwfv3&!%utbj^%o
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+INTERNAL_IPS = ['127.0.0.1']
 
 # Application definition
 
@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
-    'graphene_django'
+    'graphene_django',
+    'debug_toolbar',
+    'graphiql_debug_toolbar',
 ]
 GRAPHENE={
 
@@ -63,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'graphiql_debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 AUTHENTICATION_BACKENDS = [
     "graphql_jwt.backends.JSONWebTokenBackend",
@@ -144,3 +148,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+SESSION_COOKIE_SECURE = False
+
+GRAPHENE = {
+    "SCHEMA": "movies.schema.schema"
+}
